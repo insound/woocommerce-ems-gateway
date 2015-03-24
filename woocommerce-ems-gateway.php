@@ -1,5 +1,9 @@
 <?php
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 /*
  * Plugin Name: eMS e-commerce - WooCommerce Gateway
  * Plugin URI: http://aleksandarjakovljevic.com/eMS-woocommerce
@@ -33,6 +37,63 @@ function woocommerce_ems_gateway_init() {
       
     }
     
+    function init_form_fields() {
+
+      $this->form_fields = array(
+        'enabled' => array(
+          'title' => __( 'Enable/Disable', 'woocommerce' ),
+          'type' => 'checkbox',
+          'label' => __( 'Enable eMS Card Payment', 'woocommerce' ),
+          'default' => 'yes'
+        ),
+        'title' => array(
+          'title' => __( 'Title', 'woocommerce' ),
+          'type' => 'text',
+          'description' => __( 'This controls the title which the user sees during checkout.', 'woocommerce' ),
+          'default' => __( 'eMS Card Payment', 'woocommerce' ),
+          'desc_tip'      => true,
+        ),
+        'description' => array(
+          'title' => __( 'Customer Message', 'woocommerce' ),
+          'type' => 'textarea',
+          'default' => ''
+        )
+      );
+    }
+    
+    function process_payment( $order_id ) {
+      global $woocommerce;
+      $order = new WC_Order( $order_id );
+
+      // Mark as on-hold (we're awaiting the cheque)
+      $order->update_status('on-hold', __( 'Awaiting cheque payment', 'woocommerce' ));
+
+      // Reduce stock levels
+      $order->reduce_order_stock();
+
+      // Remove cart
+      $woocommerce->cart->empty_cart();
+
+      // Return thankyou redirect
+      return array(
+        'result' => 'success',
+        'redirect' => $this->get_return_url( $order )
+      );
+    }
+    
+    /**
+          * Logging method
+          * @param  string $message
+          */
+    public function log( $message ) {
+      if ( $this->debug ) {
+        if ( empty( $this->log ) ) {
+          $this->log = new WC_Logger();
+        }
+        $this->log->add( 'eMS', $message );
+      }
+    }
+    
   }
   
 }
@@ -42,3 +103,12 @@ function woocommerce_ems_gateway_add_class( $methods ) {
 	return $methods;
 }
 add_filter( 'woocommerce_payment_gateways', 'woocommerce_ems_gateway_add_class' );
+
+
+add_action( 'woocommerce_api_ems_callback', 'woocommerce_ems_gateway_callback_handler' );
+
+function woocommerce_ems_gateway_callback_handler() {
+  
+  // handle EMS callbacks
+  
+}
