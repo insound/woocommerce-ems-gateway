@@ -1,5 +1,8 @@
 eMS e-commerce payment gateway plugin for WooCommerce
 =======
 
-Still in development phase
+Note: This is NOT an official plugin.
+-----------
+
+Status: Heavy development
 -----------
