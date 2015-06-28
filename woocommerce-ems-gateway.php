@@ -55,7 +55,28 @@ function woocommerce_ems_gateway_init() {
                     'title' => __('Customer Message', 'woocommerce'),
                     'type' => 'textarea',
                     'default' => ''
-                )
+                ),
+                'store_name' => array(
+                    'title' => __('Store Name', 'woocommerce'),
+                    'type' => 'text',
+                    'description' => __('This should match your store name from eMS merchant portal', 'woocommerce'),
+                    'default' => '',
+                    'desc_tip' => true,
+                ),
+                'store_id' => array(
+                    'title' => __('Store ID', 'woocommerce'),
+                    'type' => 'text',
+                    'description' => __('This should match your store ID from eMS merchant portal', 'woocommerce'),
+                    'default' => '',
+                    'desc_tip' => true,
+                ),
+                'store_key' => array(
+                    'title' => __('Store Key', 'woocommerce'),
+                    'type' => 'text',
+                    'description' => __('This should match your store key from eMS merchant portal', 'woocommerce'),
+                    'default' => '',
+                    'desc_tip' => true,
+                ),
             );
         }
 
@@ -108,5 +129,6 @@ add_action('woocommerce_api_ems_callback', 'woocommerce_ems_gateway_callback_han
 
 function woocommerce_ems_gateway_callback_handler() {
 
+    
     // handle EMS callbacks
 }
