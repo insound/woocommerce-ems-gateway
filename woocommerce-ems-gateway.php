@@ -18,6 +18,13 @@ add_action('plugins_loaded', 'woocommerce_ems_gateway_init');
 function woocommerce_ems_gateway_init() {
 
     class WC_Gateway_eMS extends WC_Payment_Gateway {
+        
+        
+        /** @var boolean Whether or not logging is enabled */
+        public static $log_enabled = true;
+
+        /** @var WC_Logger Logger instance */
+        public static $logger = false;
 
         function __construct() {
 
@@ -101,15 +108,15 @@ function woocommerce_ems_gateway_init() {
         }
 
         /**
-         * Logging method
-         * @param  string $message
-         */
-        public function log($message) {
-            if ($this->debug) {
-                if (empty($this->log)) {
-                    $this->log = new WC_Logger();
+                * Logging method
+                * @param  string $message
+                */
+        public static function log( $message ) {
+            if ( self::$log_enabled ) {
+                if ( empty( self::$logger ) ) {
+                    self::$logger = new WC_Logger();
                 }
-                $this->log->add('eMS', $message);
+                self::$logger->add( 'ems', $message );
             }
         }
 
@@ -117,18 +124,17 @@ function woocommerce_ems_gateway_init() {
 
 }
 
+
+add_filter('woocommerce_payment_gateways', 'woocommerce_ems_gateway_add_class');
 function woocommerce_ems_gateway_add_class($methods) {
     $methods[] = 'WC_Gateway_eMS';
     return $methods;
 }
 
-add_filter('woocommerce_payment_gateways', 'woocommerce_ems_gateway_add_class');
 
 
 add_action('woocommerce_api_ems_callback', 'woocommerce_ems_gateway_callback_handler');
-
 function woocommerce_ems_gateway_callback_handler() {
-
-    
+    WC_Gateway_eMS::log(print_r($_REQUEST, 1));
     // handle EMS callbacks
 }
